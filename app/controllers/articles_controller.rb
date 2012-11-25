@@ -72,6 +72,12 @@ class ArticlesController < ContentController
   end
   
   def merge
+    unless current_user.admin?
+      return redirect_to :controller => "admin/content", :action => 'edit', :id => params[:id]
+      flash[:error] = _("Error, you are not allowed to perform this action")
+      return
+    end
+    
     @article = Article.find(params[:id])
     @article.merge_with(params[:article_id]) ? flash[:notice] = _("This article was updated successfully") : flash[:error] = _("Something went wront")
     return redirect_to :controller => "admin/content", :action => 'edit', :id => @article.id
