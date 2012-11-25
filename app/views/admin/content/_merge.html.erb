@@ -1,6 +1,6 @@
 <% if current_user.admin? %>
 <div class=''>
-    <h4><%= _("Merge") %></h4>
+    <h4><%= _("Merge Articles") %></h4>
     <ul id='attachments' class='inputs-list'>
 <%= form_tag(articles_merge_path(@article.id), :method => "post") do %>
   <%= label_tag(:article_id, "Article ID:") %>
