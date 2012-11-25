@@ -70,6 +70,12 @@ class ArticlesController < ContentController
     @canonical_url = ""
     render 'read'
   end
+  
+  def merge
+    @article = Article.find(params[:id])
+    @article.merge_with(params[:article_id]) ? flash[:notice] = _("This article was updated successfully") : flash[:error] = _("Something went wront")
+    return redirect_to :controller => "admin/content", :action => 'edit', :id => @article.id
+  end
 
   def check_password
     return unless request.xhr?

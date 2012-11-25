@@ -727,3 +727,15 @@ describe ArticlesController, "assigned keywords" do
     assigns(:keywords).should == "typo, is, amazing"
   end
 end
+
+
+describe ArticlesController, "#merge" do
+  #8YzaGqB
+  let(:article) { Factory(:article) }
+  before do
+    henri = Factory(:user, :login => 'henri', :profile => Factory(:profile_admin, :label => Profile::ADMIN))
+    @request.session = { :user => henri.id } 
+    post :merge, :id => article.id, :article_id => 2
+  end 
+  it { should assign_to(:article) }
+end

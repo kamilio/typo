@@ -178,6 +178,33 @@ class Article < Content
   def trackback_url
     blog.url_for("trackbacks?article_id=#{self.id}", :only_path => false)
   end
+  
+  def merge_text(article)
+    self.body += article.body
+    self.save!
+  end
+  
+  def merge_comments(article)
+    article.comments.each{|comment| comment.update_attribute(:article_id, id)}
+  end
+
+  def merge_with!(article_id)
+    raise(ArgumentError, "Same article id") if self.id == article_id
+    article = Article.find(article_id)
+    
+    merge_text(article)
+    merge_comments(article)
+    article.reload.destroy
+    self
+  end
+  
+  def merge_with(id)
+    begin
+      merge_with!(id)
+    rescue
+      false
+    end
+  end
 
   def permalink_by_format(format=nil)
     if format.nil?

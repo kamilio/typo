@@ -630,5 +630,39 @@ describe Article do
     end
 
   end
+  
+  describe "#merge_with" do
+    subject { Factory(:article) }
+    let(:article2) { Factory(:article, :body => "something else")  }
+    it { should respond_to :merge_with }
+    it "should raise exception if article id is invalid" do
+      expect { subject.merge_with!(2223) 
+        }.to raise_exception(ActiveRecord::RecordNotFound)
+    end
+    
+    it "should raise exception if article is the same id " do
+      expect { subject.merge_with!(subject.id) }.to raise_exception(ArgumentError)
+    end
+    
+    it "should destroy the second article" do
+      subject.merge_with!(article2.id)
+      Article.find_by_id(article2.id).should be_nil
+    end
+    
+    it "should transfer comments to first article" do
+      comment = Factory(:comment, :article => article2)
+      subject.merge_with!(article2.id)
+      subject.comments(true).should include comment
+    end
+    
+    it "should merge the texts" do
+      subject.merge_with!(article2.id)
+      subject.body.should include(article2.body)
+    end
+    
+    it "should return self" do
+      subject.merge_with!(article2.id).should == subject
+    end
+  end
 end
 
